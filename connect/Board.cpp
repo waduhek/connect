@@ -20,9 +20,11 @@ Board::Board(unsigned int const rows, unsigned int const columns) {
     this->current_player = Board::Colour::Yellow;
 }
 
-Board::State Board::get_board_state() { return this->board_state; }
+Board::State Board::get_board_state() const { return this->board_state; }
 
-void Board::pretty_print_board_state() {
+Board::Colour Board::get_current_player() const { return this->current_player; }
+
+void Board::pretty_print_board_state() const {
     for (auto row_it = this->board_state.begin();
          row_it < this->board_state.end(); ++row_it) {
         for (auto col_it = row_it->begin(); col_it < row_it->end(); ++col_it) {
@@ -56,7 +58,7 @@ void Board::switch_player() {
 }
 
 Board::Colour Board::check_winner(unsigned int const row,
-                                  unsigned int const column) {
+                                  unsigned int const column) const {
     // Check in the horizontal direction.
     if (this->board_state[row][column + 1] == this->current_player ||
         this->board_state[row][column - 1]) {
@@ -177,8 +179,7 @@ Board::Colour Board::place_coin(unsigned int const column) {
     }
 
     // Find where the coin can be placed.
-    size_t coin_row_index;
-    for (coin_row_index = 0; coin_row_index < current_column.size();
+    for (size_t coin_row_index = 0; coin_row_index < current_column.size();
          ++coin_row_index) {
         if (current_column[coin_row_index] == Board::Colour::Null) {
             this->board_state[coin_row_index][column] = this->current_player;

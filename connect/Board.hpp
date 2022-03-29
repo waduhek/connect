@@ -8,7 +8,7 @@ class Board final {
      * @param rows The number of rows in the board. Default 5.
      * @param columns The number of columns in the board. Default 6.
      */
-    Board(unsigned int const = 5, unsigned int const = 6);
+    Board(unsigned int const rows = 5, unsigned int const columns = 6);
 
     enum Colour {
         Yellow,
@@ -23,22 +23,25 @@ class Board final {
      *
      * @returns The current state of the board.
      */
-    State get_board_state();
+    State get_board_state() const;
+
+    Colour get_current_player() const;
 
     /**
      * Prints the board state to STDOUT.
      */
-    void pretty_print_board_state();
+    void pretty_print_board_state() const;
 
     /**
      * Places a coin in the board.
      *
-     * @param column The column in which the coin is to be placed.
+     * @param column The column in which the coin is to be placed. Note: Value
+     * must be zero indexed.
      *
      * @returns The colour that has won. `Board::Colour::Null` if no one has
      * won.
      */
-    Colour place_coin(unsigned int const);
+    Colour place_coin(unsigned int const column);
 
    private:
     unsigned int rows;
@@ -63,5 +66,6 @@ class Board final {
      * @return The current winner. If `Board::Colour::Null`, then no one has won
      * yet.
      */
-    Colour check_winner(unsigned int const, unsigned int const);
+    Colour check_winner(unsigned int const row,
+                        unsigned int const column) const;
 };
