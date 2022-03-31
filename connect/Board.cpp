@@ -178,19 +178,21 @@ Board::Colour Board::place_coin(unsigned int const column) {
         current_column.push_back((*it)[column]);
     }
 
-    // Find where the coin can be placed.
-    for (size_t coin_row_index = 0; coin_row_index < current_column.size();
-         ++coin_row_index) {
-        if (current_column[coin_row_index] == Board::Colour::Null) {
-            this->board_state[coin_row_index][column] = this->current_player;
+    // Find the first position from the bottom where the coin can be placed.
+    for (size_t i = current_column.size() - 1; i >= 0; --i) {
+        Board::Colour current_position = current_column[i];
 
-            auto winner = this->check_winner(coin_row_index, column);
+        if (current_position == Board::Colour::Null) {
+            // Place the coin in the available location.
+            this->board_state[i][column] = this->current_player;
+
+            auto winner = this->check_winner(i, column);
+            this->switch_player();
 
             if (winner != Board::Colour::Null) {
                 return winner;
             }
 
-            this->switch_player();
             break;
         }
     }
