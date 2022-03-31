@@ -58,6 +58,50 @@ class Board final {
     void switch_player();
 
     /**
+     * Checks for a winner in the horizontal direction.
+     *
+     * @param row The row in which the coin was placed.
+     * @param column The column in which the coin was placed.
+     *
+     * @returns `true` if the current player has won.
+     */
+    bool check_horizontal_direction(unsigned int const row,
+                                    unsigned int const column) const;
+
+    /**
+     * Checks for a winner in the vertical direction.
+     *
+     * @param row The row in which the coin was placed.
+     * @param column The column in which the coin was placed.
+     *
+     * @returns `true` if the current player has won.
+     */
+    bool check_vertical_direction(unsigned int const row,
+                                  unsigned int const column) const;
+
+    /**
+     * Checks for a winner in the ascending diagonal.
+     *
+     * @param row The row in which the coin was placed.
+     * @param column The column in which the coin was placed.
+     *
+     * @returns `true` if the current player has won.
+     */
+    bool check_ascending_diagonal(unsigned int const row,
+                                  unsigned int const colum) const;
+
+    /**
+     * Checks for a winner in the descending diagonal.
+     *
+     * @param row The row in which the coin was placed.
+     * @param column The column in which the coin was placed.
+     *
+     * @returns `true` if the current player has won.
+     */
+    bool check_descending_diagonal(unsigned int const row,
+                                   unsigned int const colum) const;
+
+    /**
      * Checks if the current player has won the game.
      *
      * @param row The row in which the coin was placed.
@@ -65,6 +109,8 @@ class Board final {
      *
      * @return The current winner. If `Board::Colour::Null`, then no one has won
      * yet.
+     *
+     * @note Do not change the current player till the function returns.
      */
     Colour check_winner(unsigned int const row,
                         unsigned int const column) const;
