@@ -20,9 +20,11 @@ Board::Board(unsigned int const rows, unsigned int const columns) {
     this->current_player = Board::Colour::Yellow;
 }
 
-Board::State Board::get_board_state() { return this->board_state; }
+Board::State Board::get_board_state() const { return this->board_state; }
 
-void Board::pretty_print_board_state() {
+Board::Colour Board::get_current_player() const { return this->current_player; }
+
+void Board::pretty_print_board_state() const {
     for (auto row_it = this->board_state.begin();
          row_it < this->board_state.end(); ++row_it) {
         for (auto col_it = row_it->begin(); col_it < row_it->end(); ++col_it) {
@@ -55,117 +57,114 @@ void Board::switch_player() {
     }
 }
 
+bool Board::check_horizontal_direction(unsigned int const row,
+                                       unsigned int const column) const {
+    unsigned int coin_count = 1;
+
+    // Check in the left direction.
+    int current_column = column - 1;
+    for (; current_column >= 0 &&
+           this->board_state[row][current_column] == this->current_player;
+         --current_column) {
+        ++coin_count;
+    }
+
+    // Check in the right direction.
+    current_column = column + 1;
+    for (; current_column < this->columns &&
+           this->board_state[row][current_column] == this->current_player;
+         ++current_column) {
+        ++coin_count;
+    }
+
+    return coin_count >= 4;
+}
+
+bool Board::check_vertical_direction(unsigned int const row,
+                                     unsigned int const column) const {
+    unsigned int coin_count = 1;
+
+    // Check in the upper portion.
+    int current_row = row - 1;
+    for (; current_row >= 0 &&
+           this->board_state[current_row][column] == this->current_player;
+         --current_row) {
+        ++coin_count;
+    }
+
+    // Check in the botton portion.
+    current_row = row + 1;
+    for (; current_row < this->rows &&
+           this->board_state[current_row][column] == this->current_player;
+         ++current_row) {
+        ++coin_count;
+    }
+
+    return coin_count >= 4;
+}
+
+bool Board::check_ascending_diagonal(unsigned int const row,
+                                     unsigned int const column) const {
+    unsigned int coin_count = 1;
+
+    // Check up the diagonal.
+    int current_row = row - 1;
+    int current_column = column + 1;
+    for (;
+         current_row >= 0 && current_column < this->columns &&
+         this->board_state[current_row][current_column] == this->current_player;
+         --current_row, ++current_column) {
+        ++coin_count;
+    }
+
+    // Check down the diagonal.
+    current_row = row + 1;
+    current_column = column - 1;
+    for (;
+         current_row < this->rows && current_column >= 0 &&
+         this->board_state[current_row][current_column] == this->current_player;
+         ++current_row, --current_column) {
+        ++coin_count;
+    }
+
+    return coin_count >= 4;
+}
+
+bool Board::check_descending_diagonal(unsigned int const row,
+                                      unsigned int const column) const {
+    unsigned coin_count = 1;
+
+    // Check up the diagonal.
+    int current_row = row - 1;
+    int current_column = column - 1;
+    for (;
+         current_row >= 0 && current_column >= 0 &&
+         this->board_state[current_row][current_column] == this->current_player;
+         --current_row, --current_column) {
+        ++coin_count;
+    }
+
+    // Check down the diagonal.
+    current_row = row + 1;
+    current_column = column + 1;
+    for (;
+         current_row < this->rows && current_column < this->columns &&
+         this->board_state[current_row][current_column] == this->current_player;
+         ++current_row, ++current_column) {
+        ++coin_count;
+    }
+
+    return coin_count >= 4;
+}
+
 Board::Colour Board::check_winner(unsigned int const row,
-                                  unsigned int const column) {
-    // Check in the horizontal direction.
-    if (this->board_state[row][column + 1] == this->current_player ||
-        this->board_state[row][column - 1]) {
-        unsigned int current_player_coin_count = 1;
-
-        // Traverse to the left most coin from the current coin.
-        unsigned int current_column = column - 1;
-        while (this->board_state[row][current_column] == this->current_player) {
-            --current_column;
-            ++current_player_coin_count;
-        }
-
-        // Traverse right from the current coin.
-        current_column = column + 1;
-        while (this->board_state[row][current_column] == this->current_player) {
-            ++current_column;
-            ++current_player_coin_count;
-        }
-
-        if (current_player_coin_count >= 4) {
-            return this->current_player;
-        }
-    }
-
-    // Check in the vertical direction.
-    if (this->board_state[row + 1][column] == this->current_player ||
-        this->board_state[row - 1][column] == this->current_player) {
-        unsigned int current_player_coin_count = 1;
-
-        // Traverse to the the top most coin from the current coin.
-        unsigned int current_row = row - 1;
-        while (this->board_state[current_row][column] == this->current_player) {
-            --current_row;
-            ++current_player_coin_count;
-        }
-
-        // Traverse to the bottom most coin from the current coin.
-        current_row = row + 1;
-        while (this->board_state[current_row][column] == this->current_player) {
-            ++current_row;
-            ++current_player_coin_count;
-        }
-
-        if (current_player_coin_count >= 4) {
-            return this->current_player;
-        }
-    }
-
-    // Check in the descending diagonal.
-    if (this->board_state[row - 1][column - 1] == this->current_player ||
-        this->board_state[row + 1][column + 1] == this->current_player) {
-        unsigned int current_player_coin_count = 1;
-
-        // Traverse to the top of the diagonal.
-        unsigned int current_row = row - 1;
-        unsigned int current_column = column - 1;
-        while (this->board_state[current_row][current_column] ==
-               this->current_player) {
-            --current_row;
-            --current_column;
-            ++current_player_coin_count;
-        }
-
-        // Traverse to the bottom of the diagonal.
-        current_row = row + 1;
-        current_column = column + 1;
-        while (this->board_state[current_row][current_column] ==
-               this->current_player) {
-            ++current_row;
-            ++current_column;
-            ++current_player_coin_count;
-        }
-
-        if (current_player_coin_count >= 4) {
-            return this->current_player;
-        }
-    }
-
-    // Check the ascending diagonal.
-    if (this->board_state[row - 1][column + 1] == this->current_player ||
-        this->board_state[row + 1][column - 1] == this->current_player) {
-        unsigned int current_player_coin_count = 1;
-
-        // Traverse to the top of the diagonal.
-        unsigned int current_row = row - 1;
-        unsigned int current_column = column + 1;
-        while (this->board_state[current_row][current_column] ==
-               this->current_player) {
-            --current_row;
-            ++current_column;
-            ++current_player_coin_count;
-        }
-
-        // Traverse to the bottom of the diagonal.
-        current_row = row + 1;
-        current_column = column - 1;
-        while (this->board_state[current_row][current_column] ==
-               this->current_player) {
-            ++current_row;
-            --current_column;
-            ++current_player_coin_count;
-        }
-
-        if (current_player_coin_count >= 4) {
-            return this->current_player;
-        }
-    }
-
-    return Board::Colour::Null;
+                                  unsigned int const column) const {
+    return (this->check_horizontal_direction(row, column) ||
+            this->check_vertical_direction(row, column) ||
+            this->check_ascending_diagonal(row, column) ||
+            this->check_descending_diagonal(row, column))
+               ? this->current_player
+               : Board::Colour::Null;
 }
 
 Board::Colour Board::place_coin(unsigned int const column) {
@@ -176,14 +175,15 @@ Board::Colour Board::place_coin(unsigned int const column) {
         current_column.push_back((*it)[column]);
     }
 
-    // Find where the coin can be placed.
-    size_t coin_row_index;
-    for (coin_row_index = 0; coin_row_index < current_column.size();
-         ++coin_row_index) {
-        if (current_column[coin_row_index] == Board::Colour::Null) {
-            this->board_state[coin_row_index][column] = this->current_player;
+    // Find the first position from the bottom where the coin can be placed.
+    for (size_t i = current_column.size() - 1; i >= 0; --i) {
+        Board::Colour current_position = current_column[i];
 
-            auto winner = this->check_winner(coin_row_index, column);
+        if (current_position == Board::Colour::Null) {
+            // Place the coin in the available location.
+            this->board_state[i][column] = this->current_player;
+
+            auto winner = this->check_winner(i, column);
 
             if (winner != Board::Colour::Null) {
                 return winner;
