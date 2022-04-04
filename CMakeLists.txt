@@ -21,3 +21,7 @@ add_executable(board_test connect/Board.test.cpp)
 target_link_libraries(board_test board GTest::gtest GTest::gtest_main)
 
 gtest_discover_tests(board_test)
+
+# Add the CLI executable.
+add_executable(connect_cli connect/connect_cli.cpp)
+target_link_libraries(connect_cli board)
