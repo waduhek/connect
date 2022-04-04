@@ -178,16 +178,8 @@ Board::Colour Board::place_coin(unsigned int const column) {
         throw std::out_of_range("No more coins can be placed in this column");
     }
 
-    // Get the coins in the column the player wants to play their next move in.
-    std::vector<Board::Colour> current_column;
-    for (auto it = this->board_state.begin(); it < this->board_state.end();
-         ++it) {
-        current_column.push_back((*it)[column]);
-    }
-
-    // Find the first position from the bottom where the coin can be placed.
-    for (size_t i = current_column.size() - 1; i >= 0; --i) {
-        Board::Colour current_position = current_column[i];
+    for (size_t i = this->rows - 1; i >= 0; --i) {
+        Board::Colour current_position = this->board_state[i][column];
 
         if (current_position == Board::Colour::Null) {
             // Place the coin in the available location.
