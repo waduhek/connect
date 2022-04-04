@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <connect/Board.hpp>
+#include <stdexcept>
 #include <vector>
 
 TEST(BoardTest, CreateBoard) {
@@ -75,9 +76,21 @@ TEST(BoardTest, Play2Moves) {
          Board::Colour::Null, Board::Colour::Null, Board::Colour::Null},
     };
 
-    EXPECT_EQ(board.get_board_state(), expected_state);
-    EXPECT_EQ(winnner, Board::Colour::Null);
-    EXPECT_EQ(board.get_current_player(), Board::Colour::Yellow);
+    ASSERT_EQ(board.get_board_state(), expected_state);
+    ASSERT_EQ(winnner, Board::Colour::Null);
+    ASSERT_EQ(board.get_current_player(), Board::Colour::Yellow);
+}
+
+TEST(BoardTest, CheckOverflow) {
+    Board board;
+
+    board.place_coin(0);
+    board.place_coin(0);
+    board.place_coin(0);
+    board.place_coin(0);
+    board.place_coin(0);
+
+    ASSERT_THROW(board.place_coin(0), std::out_of_range);
 }
 
 TEST(BoardTest, CheckHorizontalWin) {
@@ -148,7 +161,7 @@ TEST(BoardTest, CheckAscendingDiagonalWin) {
     ASSERT_EQ(winner, Board::Colour::Yellow);
 }
 
-TEST(BoardTest, CheckDescendingWin) {
+TEST(BoardTest, CheckDescendingDiagonalWin) {
     Board board;
 
     Board::Colour winner = board.place_coin(5);
