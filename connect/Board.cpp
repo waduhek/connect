@@ -1,7 +1,8 @@
 #include <connect/Board.hpp>
 #include <iostream>
+#include <stdexcept>
 
-Board::Board(unsigned int const rows, unsigned int const columns) {
+Board::Board(unsigned int const rows, unsigned int const columns) noexcept {
     // Set the rows and columns class properties.
     this->rows = rows;
     this->columns = columns;
@@ -20,11 +21,15 @@ Board::Board(unsigned int const rows, unsigned int const columns) {
     this->current_player = Board::Colour::Yellow;
 }
 
-Board::State Board::get_board_state() const { return this->board_state; }
+Board::State Board::get_board_state() const noexcept {
+    return this->board_state;
+}
 
-Board::Colour Board::get_current_player() const { return this->current_player; }
+Board::Colour Board::get_current_player() const noexcept {
+    return this->current_player;
+}
 
-void Board::pretty_print_board_state() const {
+void Board::pretty_print_board_state() const noexcept {
     for (auto row_it = this->board_state.begin();
          row_it < this->board_state.end(); ++row_it) {
         for (auto col_it = row_it->begin(); col_it < row_it->end(); ++col_it) {
@@ -49,7 +54,7 @@ void Board::pretty_print_board_state() const {
     std::cout << std::endl;
 }
 
-void Board::switch_player() {
+void Board::switch_player() noexcept {
     if (this->current_player == Board::Colour::Yellow) {
         this->current_player = Board::Colour::Red;
     } else {
@@ -57,8 +62,8 @@ void Board::switch_player() {
     }
 }
 
-bool Board::check_horizontal_direction(unsigned int const row,
-                                       unsigned int const column) const {
+bool Board::check_horizontal_direction(
+    unsigned int const row, unsigned int const column) const noexcept {
     unsigned int coin_count = 1;
 
     // Check in the left direction.
@@ -81,7 +86,7 @@ bool Board::check_horizontal_direction(unsigned int const row,
 }
 
 bool Board::check_vertical_direction(unsigned int const row,
-                                     unsigned int const column) const {
+                                     unsigned int const column) const noexcept {
     unsigned int coin_count = 1;
 
     // Check in the upper portion.
@@ -104,7 +109,7 @@ bool Board::check_vertical_direction(unsigned int const row,
 }
 
 bool Board::check_ascending_diagonal(unsigned int const row,
-                                     unsigned int const column) const {
+                                     unsigned int const column) const noexcept {
     unsigned int coin_count = 1;
 
     // Check up the diagonal.
@@ -130,8 +135,8 @@ bool Board::check_ascending_diagonal(unsigned int const row,
     return coin_count >= 4;
 }
 
-bool Board::check_descending_diagonal(unsigned int const row,
-                                      unsigned int const column) const {
+bool Board::check_descending_diagonal(
+    unsigned int const row, unsigned int const column) const noexcept {
     unsigned coin_count = 1;
 
     // Check up the diagonal.
@@ -158,7 +163,7 @@ bool Board::check_descending_diagonal(unsigned int const row,
 }
 
 Board::Colour Board::check_winner(unsigned int const row,
-                                  unsigned int const column) const {
+                                  unsigned int const column) const noexcept {
     return (this->check_horizontal_direction(row, column) ||
             this->check_vertical_direction(row, column) ||
             this->check_ascending_diagonal(row, column) ||
@@ -168,16 +173,13 @@ Board::Colour Board::check_winner(unsigned int const row,
 }
 
 Board::Colour Board::place_coin(unsigned int const column) {
-    // Get the coins in the column the player wants to play their next move in.
-    std::vector<Board::Colour> current_column;
-    for (auto it = this->board_state.begin(); it < this->board_state.end();
-         ++it) {
-        current_column.push_back((*it)[column]);
+    // Check if at least the topmost slot is available.
+    if (this->board_state[0][column] != Board::Colour::Null) {
+        throw std::out_of_range("No more coins can be placed in this column");
     }
 
-    // Find the first position from the bottom where the coin can be placed.
-    for (size_t i = current_column.size() - 1; i >= 0; --i) {
-        Board::Colour current_position = current_column[i];
+    for (size_t i = this->rows - 1; i >= 0; --i) {
+        Board::Colour current_position = this->board_state[i][column];
 
         if (current_position == Board::Colour::Null) {
             // Place the coin in the available location.

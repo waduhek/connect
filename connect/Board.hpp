@@ -8,7 +8,7 @@ class Board final {
      * @param rows The number of rows in the board. Default 5.
      * @param columns The number of columns in the board. Default 6.
      */
-    Board(unsigned int const rows = 5, unsigned int const columns = 6);
+    Board(unsigned int const rows = 5, unsigned int const columns = 6) noexcept;
 
     enum Colour {
         Yellow,
@@ -23,14 +23,14 @@ class Board final {
      *
      * @returns The current state of the board.
      */
-    State get_board_state() const;
+    State get_board_state() const noexcept;
 
-    Colour get_current_player() const;
+    Colour get_current_player() const noexcept;
 
     /**
      * Prints the board state to STDOUT.
      */
-    void pretty_print_board_state() const;
+    void pretty_print_board_state() const noexcept;
 
     /**
      * Places a coin in the board.
@@ -40,6 +40,9 @@ class Board final {
      *
      * @returns The colour that has won. `Board::Colour::Null` if no one has
      * won.
+     *
+     * @throws `std::out_of_range` error if provided column value cannot hold
+     * any more coins.
      */
     Colour place_coin(unsigned int const column);
 
@@ -55,7 +58,7 @@ class Board final {
     /**
      * Changes the current player.
      */
-    void switch_player();
+    void switch_player() noexcept;
 
     /**
      * Checks for a winner in the horizontal direction.
@@ -66,7 +69,7 @@ class Board final {
      * @returns `true` if the current player has won.
      */
     bool check_horizontal_direction(unsigned int const row,
-                                    unsigned int const column) const;
+                                    unsigned int const column) const noexcept;
 
     /**
      * Checks for a winner in the vertical direction.
@@ -77,7 +80,7 @@ class Board final {
      * @returns `true` if the current player has won.
      */
     bool check_vertical_direction(unsigned int const row,
-                                  unsigned int const column) const;
+                                  unsigned int const column) const noexcept;
 
     /**
      * Checks for a winner in the ascending diagonal.
@@ -88,7 +91,7 @@ class Board final {
      * @returns `true` if the current player has won.
      */
     bool check_ascending_diagonal(unsigned int const row,
-                                  unsigned int const colum) const;
+                                  unsigned int const colum) const noexcept;
 
     /**
      * Checks for a winner in the descending diagonal.
@@ -99,7 +102,7 @@ class Board final {
      * @returns `true` if the current player has won.
      */
     bool check_descending_diagonal(unsigned int const row,
-                                   unsigned int const colum) const;
+                                   unsigned int const colum) const noexcept;
 
     /**
      * Checks if the current player has won the game.
@@ -113,5 +116,5 @@ class Board final {
      * @note Do not change the current player till the function returns.
      */
     Colour check_winner(unsigned int const row,
-                        unsigned int const column) const;
+                        unsigned int const column) const noexcept;
 };
